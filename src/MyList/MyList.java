@@ -4,8 +4,8 @@ package MyList;
 import java.util.*;
 
 public class MyList implements List{
-    Node head;
-    Node tail;
+    private  Node head;
+    private  Node tail;
     private int size = 0;
     public class Node{
         private Object value;
@@ -27,9 +27,13 @@ public class MyList implements List{
 
     public void print(){
         Node node = head;
-        while (node != null){
-            System.out.println(node.value.toString());
-            node = node.next;
+        if(node != null) {
+            while (node != null) {
+                System.out.println(node.value.toString());
+                node = node.next;
+            }
+        }else{
+            System.out.println("List is empty!");
         }
     }
 
@@ -46,15 +50,15 @@ public class MyList implements List{
                 return contained;
             }
         }
-        if(head.value == o){
+        if(head.value.equals(o)){
             return true;
         }
-        if(tail.value == o){
+        if(tail.value.equals(o)){
             return  true;
         }
         Node node = head;
-        while (node != null){
-            if (node.next.value == o){
+        while (node.next != null){
+            if (node.next.value.equals(o)){
                 return true;
             }
             node = node.next;
@@ -65,12 +69,20 @@ public class MyList implements List{
 
     @Override
     public Iterator iterator() {
-        return null;
+        return new MyIterator(this);
     }
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        int index = 0;
+        Object[] array = new Object[size];
+        Node node = head;
+        while(node != null){
+            array[index] = node.value;
+            index++;
+            node = node.next;
+        }
+        return array;
     }
 
     @Override
@@ -93,9 +105,6 @@ public class MyList implements List{
     @Override
     public boolean remove(Object o) {
         boolean removed = false;
-        if(head == null){
-            return removed ;
-        }
         if (head == tail){
             head = null;
             tail = null;
@@ -127,16 +136,47 @@ public class MyList implements List{
 
     @Override
     public boolean addAll(Collection c) {
-        return false;
+        boolean added = false;
+        if(c instanceof  Object){
+            for (Object o:c) {
+                this.add(o);
+            }
+            added = true;
+        }
+        return added;
     }
 
     @Override
     public boolean addAll(int index, Collection c) {
-        return false;
+        int counter = 0;
+        boolean added  = false;
+        if(index == counter){
+             this.addAll(c);
+             added = true;
+        }
+        Node node = head;
+        if(c instanceof  Object){
+            while (node != null){
+                counter++;
+                if(counter == index){
+                    for (Object o:c) {
+                        int i = index;
+                        this.add(i, o);
+                        i++;
+                    }
+                    added = true;
+                }
+                node = node.next;
+            }
+        }
+        return added;
     }
 
     @Override
     public void clear() {
+        head.next = null;
+        head = null;
+        size = 0;
 
     }
 
@@ -163,7 +203,22 @@ public class MyList implements List{
 
     @Override
     public Object set(int index, Object element) {
-        return null;
+        Object o = new Object();
+        if(index<size || ( size == 0 && index ==0)) {
+            int counter = 0;
+            Node node = head;
+            while (node != null) {
+                if (counter == index) {
+                    o = node.value;
+                    node.value = element;
+                }
+                counter++;
+                node = node.next;
+            }
+        } else {
+            System.out.println("Index out of list bounds");
+        }
+        return o;
     }
 
     @Override
@@ -191,6 +246,8 @@ public class MyList implements List{
                node = node.next;
            }
            size++;
+       } else{
+           System.out.println("There is not such index");
        }
 
 
@@ -198,13 +255,50 @@ public class MyList implements List{
 
     @Override
     public Object remove(int index) {
+        Object result = null;
+        if(index < size || (size == 0 && index == 0)){
+          int counter = 0;
+          if(counter == index){
+              result = head.value;
+              head = head.next;
+              size--;
+              return result;
+          }
+          Node node = head;
+          while (node!= null){
+              counter++;
+              if(counter == index){
+                      result = node.next.value;
+                      node.next = node.next.next;
+                      size--;
+                  }
+              node = node.next;
+              }
+          } else{
+            System.out.println("Index out of list bounds");
+        }
 
-        return null;
+        return result;
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        int index = 0;
+        Node node = head;
+        if(head.value == (o)){
+            return index;
+        }
+        while (node.next != null){
+            index++;
+            if(node.next.value.equals(o)){
+                return  index;
+            }
+            node = node.next;
+
+        }
+        index = -1;
+
+        return  index;
     }
 
     @Override
@@ -223,8 +317,28 @@ public class MyList implements List{
     }
 
     @Override
-    public List subList(int fromIndex, int toIndex) {
-        return null;
+    public MyList subList(int fromIndex, int toIndex) {
+        MyList newList = new MyList();
+        if(toIndex < size){
+            Node node = head;
+            int count = 0;
+            while(node != null) {
+                int i = count;
+                if(count == fromIndex){
+                        while (i <= toIndex) {
+                            Object o = this.get(i);
+                            newList.add(o);
+                            i++;
+                        }
+
+                }
+                    count++;
+                    node = node.next;
+            }
+        } else {
+            System.out.println("Index out of list bounds");
+        }
+        return newList ;
     }
 
     @Override
